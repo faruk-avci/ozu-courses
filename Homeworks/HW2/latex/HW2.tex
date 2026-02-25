@@ -1,0 +1,130 @@
+\documentclass{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{booktabs} % For professional tables
+
+% Packages for code and output boxes
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{listings, skins, breakable} % <--- Added 'breakable' here!
+
+% Define the style for C++ syntax highlighting
+\lstdefinestyle{cppstyle}{
+    language=C++,
+    basicstyle=\ttfamily\scriptsize, 
+    keywordstyle=\color{blue!80!black}\bfseries,
+    stringstyle=\color{red!70!black},
+    commentstyle=\color{green!50!black}\itshape,
+    showstringspaces=false,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=3.5pt, % Adjust this value to move the line numbers left or right   breaklines=true,
+    tabsize=4
+}
+
+% Create the Code Box environment
+\newtcblisting{codebox}[1]{
+    arc=3mm,
+    boxrule=1pt,
+    colback=blue!5!white,
+    colframe=blue!75!black,
+    title={\textbf{#1}},
+    listing only,
+    listing style=cppstyle,
+    breakable % <--- Added this to allow page breaks!
+}
+
+% Create the Output Box environment
+\newtcolorbox{outputbox}[1]{
+    arc=3mm,
+    boxrule=1pt,
+    colback=black!85!white,
+    colframe=black,
+    coltext=white,
+    title={\textbf{#1}},
+    fontupper=\ttfamily\scriptsize,
+    left=2mm, right=2mm, top=2mm, bottom=2mm,
+    fontupper=\ttfamily\scriptsize\obeylines, % <--- Added \obeylines here!
+    breakable % <--- Added this to allow page breaks!
+}
+
+\title{PHYS 551: Homework 2}
+\author{Your Name Here}
+\date{February 24, 2026}
+
+\begin{document}
+
+
+% =======================================================
+% COVER PAGE
+% =======================================================
+
+% =======================================================
+% MODERN COVER PAGE
+% =======================================================
+
+\begin{titlepage}
+\begin{center}
+
+% Top 
+\includegraphics[width=0.55\textwidth]{images/ozu.png}\\[2cm]
+
+\rule{\linewidth}{0.5mm}\\[0.4cm]
+
+% Title
+{ \LARGE 
+  \textbf{PHYS551: Advanced Monte Carlo Methods}\\[0.4cm]
+  \emph{Homework 2}\\[0.4cm]
+}
+\rule{\linewidth}{0.5mm}\\[0.4cm]
+
+\hfill
+\hfill
+
+% Author
+\linewidth=0.8\textwidth
+
+	\begin{minipage}{0.4\textwidth}
+		\begin{flushleft} \large
+			\emph{Student:}\\
+			Ömer Faruk \textsc{Avcı} % Your name here
+		\end{flushleft}
+	\end{minipage}
+	~
+	\begin{minipage}{0.5\textwidth} % Made slightly wider to fit long titles
+		\begin{flushright} \large
+			\emph{Instructor:}\\
+			Prof. Dr. Taylan \textsc{Akdo\u{g}an}\\[0.1cm]
+
+		\end{flushright}
+	\end{minipage}
+	
+
+
+\vfill
+
+%\textsc{\Large Cyprus University of Technology}\\[0.4cm]
+\textsc{\large Department of Electrical and Electronics Engineering}\\[0.4cm]
+
+
+
+
+% Bottom
+{\large \today}
+ 
+\end{center}
+\end{titlepage}
+
+% =======================================================
+% START OF CONTENT
+% =======================================================
+
+
+% =======================================================
+% START OF CONTENT
+% =======================================================
+
+\end{document}

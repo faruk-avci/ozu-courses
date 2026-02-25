@@ -50,7 +50,7 @@
 
 std::random_device rd; // Random device for seeding
 std::mt19937 gen(rd()); // Mersenne Twister random number generator
-std::uniform_real_distribution<> square_dist(-1.0, 1.0); // Distribution for x and y coordinates
+std::uniform_real_distribution<> square_dist(-1.0, 1.0); // Distribution for x and y coordinates 
 std::uniform_real_distribution<> angle_dist(0.0, 2.0 * M_PI); // Distribution for random walk angles
 
 /* 
@@ -63,8 +63,6 @@ std::uniform_real_distribution<> angle_dist(0.0, 2.0 * M_PI); // Distribution fo
 // Estimates Pi by placing a circle of radius 1 inside a 2x2 square.
 double estimate_pi(int N){
     
-   
-
     int inside = 0; // Counter for points that fall inside the inscribed circle
 
     for(int i = 0; i < N; i++){
@@ -245,12 +243,13 @@ void run_problem_3_a(int steps) {
     }
 
     matplotlibcpp::figure();
-    matplotlibcpp::plot(x_coords, y_coords, "b-");
-    matplotlibcpp::plot({x_coords[0]}, {y_coords[0]}, "go");
-    matplotlibcpp::plot({x_coords.back()}, {y_coords.back()}, "r^"); 
+    matplotlibcpp::plot(x_coords, y_coords, {{"color", "blue"}, {"linestyle", "-"}, {"label", "Path"}});
+    matplotlibcpp::plot({x_coords[0]}, {y_coords[0]}, {{"color", "green"}, {"marker", "o"}, {"label", "Start"}, {"markersize", "8"}});
+    matplotlibcpp::plot({x_coords.back()}, {y_coords.back()}, {{"color", "red"}, {"marker", "^"}, {"label", "End"}, {"markersize", "8"}});
     matplotlibcpp::xlabel("x");
     matplotlibcpp::ylabel("y");
     matplotlibcpp::title("2D Random Walk (Drunkard's Walk)");
+    matplotlibcpp::legend();
     matplotlibcpp::grid(true);
     matplotlibcpp::show();
 
@@ -276,10 +275,12 @@ void run_problem_3() {
     run_problem_3_a(steps); // Simulate and plot a single random walk with 1000 steps
     std::cout << "\nRunning Problem 3b/c: Simulate 1000 Random Walks and Compute RMS Distance" << std::endl;
     run_problem_3_b_c(steps, walks); // Simulate 1000 random walks and compute RMS distance
+
 }
 
 
 int main() {
+
     std::cout << "==========================" << std::endl;
     std::cout << "Running Problem 2: Estimating Pi" << std::endl;
     std::cout << "==========================" << std::endl;

@@ -199,7 +199,7 @@ Because a single Monte Carlo realization is subject to high statistical variance
 \begin{equation}
     \text{Error}_N = \frac{1}{10} \sum_{k=1}^{10} |\hat{\pi}_{N,k} - \pi_{\text{true}}|
 \end{equation}
-The full C++ implementation is displayed below (raw output is provided in Appendix A):
+The full C++ implementation is displayed below (output is provided in Appendix A):
 \newpage
 \begin{codebox}{C++ Source Code: Problem 2 Complete Implementation}
 #include <iostream>
@@ -479,14 +479,15 @@ void run_problem_3_a(int steps) {
         x_coords.push_back(x);
         y_coords.push_back(y);
     }
-
+    
     matplotlibcpp::figure();
-    matplotlibcpp::plot(x_coords, y_coords, "b-");
-    matplotlibcpp::plot({x_coords[0]}, {y_coords[0]}, "go");
-    matplotlibcpp::plot({x_coords.back()}, {y_coords.back()}, "r^"); 
+    matplotlibcpp::plot(x_coords, y_coords, {{"color", "blue"}, {"linestyle", "-"}, {"label", "Path"}});
+    matplotlibcpp::plot({x_coords[0]}, {y_coords[0]}, {{"color", "green"}, {"marker", "o"}, {"label", "Start"}, {"markersize", "8"}});
+    matplotlibcpp::plot({x_coords.back()}, {y_coords.back()}, {{"color", "red"}, {"marker", "^"}, {"label", "End"}, {"markersize", "8"}});
     matplotlibcpp::xlabel("x");
     matplotlibcpp::ylabel("y");
     matplotlibcpp::title("2D Random Walk (Drunkard's Walk)");
+    matplotlibcpp::legend();
     matplotlibcpp::grid(true);
     matplotlibcpp::show();
 
@@ -518,7 +519,7 @@ void run_problem_3() {
 
 
 \subsection*{3. Results \& Discussion}
-The trajectory of a single random walker (Task a) is shown in Figure \ref{fig:random_walk}. The path exhibits characteristic diffusive behavior, moving away from the origin in a jagged, non-linear path.
+The trajectory of a single random walker (Task a) is shown in Figure 3. The path exhibits characteristic diffusive behavior, moving away from the origin in a jagged, non-linear path.
 
 For the ensemble average (Task b/c), the RMS distance was calculated over $M=1000$ independent simulations.
 
@@ -558,10 +559,10 @@ The experimental result is extremely close to the theoretical value, with a rela
 % ==========================================
 \appendix
 
-\section{Raw Terminal Output (Problem 2)}
+\section{Terminal Output (Problem 2)}
 Below is the exact, unedited terminal output from the Monte Carlo simulation (Problem 2).
 
-\begin{outputbox}{Raw Terminal Output: Problem 2 Results}
+\begin{outputbox}{Terminal Output: Problem 2 Results}
     ==========================
 Running Problem 2: Estimating Pi
 ==========================
