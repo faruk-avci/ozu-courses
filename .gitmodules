@@ -4,3 +4,5 @@
 [submodule "EE-350"]
 	path = EE-350
 	url = https://github.com/faruk-avci/EE-350.git
+[submodule "ozu-courses"]
+	branch = main
