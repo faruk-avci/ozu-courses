@@ -1,0 +1,550 @@
+\documentclass{article}
+\usepackage[a4paper, left=3cm, right=3cm, top=3cm, bottom=2.7cm]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+\usepackage{float}
+\usepackage{subcaption}
+
+\usepackage{etoolbox}
+\usepackage{amsmath}
+\usepackage{circuitikz}
+\usepackage{graphicx}
+\usepackage{float}
+
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1}}{}{}
+}
+\makeatother
+
+
+\title{\includegraphics[scale=0.65]{images/ozu.png}\\
+\textbf{EE202 - Circuit Analysis}}
+\subtitle{Laboratory 2}
+\date{Fall 2022}
+%\author{Laboratory 1}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+
+% Top 
+\includegraphics[width=0.55\textwidth]{ozu.png}~\\[2cm]
+
+% Title
+\HRule \\[0.4cm]
+{ \LARGE 
+  \textbf{Lab Report for EE202 Circuit Analysis}\\[0.4cm]
+  \emph{Laboratory 2}\\[0.4cm]
+}
+\HRule \\[1.5cm]
+
+% Author
+{ \large
+  Ömer Faruk Avcı \\[0.1cm]
+  \texttt{faruk.avci@ozu.edu.tr}
+}
+
+\vfill
+
+%\textsc{\Large Cyprus University of Technology}\\[0.4cm]
+\textsc{\large Department of Electrical and Electronics Engineering}\\[0.4cm]
+
+
+% Bottom
+{\large \today}
+ 
+\end{center}
+\end{titlepage}
+
+
+
+\newpage
+
+%\maketitle
+
+\section{Introduction}
+This lab aims to determine the current through a specific resistor and the voltage across its nodes using Thevenin’s and Norton’s theorems and superposition, based on circuit measurements under short-circuit and open-circuit conditions.
+
+\subsection{Preliminary Work}
+\subsubsection{Pre Task 1}
+To determine the Thevenin and Norton of the circuit shown in \textbf{Figure 1.}, below steps are followed:
+
+To find \( R_{eq} \):
+\begin{enumerate}
+  \item \textbf{Short the voltage source} by replacing it with a wire.
+  \item \textbf{Remove \( R_3 \)} to analyze the circuit without it.
+  \item \textbf{Find \( R_{eq} \)} by simplifying the resistor network.
+\end{enumerate}
+
+Following these steps, the circuit in \textbf{Figure 2} is obtained. In this configuration, \( R_1 \) and \( R_5 \) are in parallel, as well as \( R_2 \) and \( R_4 \). The equivalent resistance, \( R_{eq} \), is calculated as:
+
+\[
+R_{eq} = R_{(1,5)} + R_{(2,4)}
+\]
+
+where:
+
+\[
+R_{(1,5)} = \frac{R_1 R_5}{R_1 + R_5} = \frac{4.7\text{k}\Omega \times 1\text{k}\Omega}{4.7\text{k}\Omega + 1\text{k}\Omega}
+\]
+
+\[
+R_{(2,4)} = \frac{R_2 R_4}{R_2 + R_4} = \frac{3.3\text{k}\Omega \times 6.8\text{k}\Omega}{3.3\text{k}\Omega + 6.8\text{k}\Omega}
+\]
+
+Thus, the total equivalent resistance simplifies to:
+
+\[
+R_{eq} = \frac{4.7 \times 1}{4.7 + 1} \text{k}\Omega + \frac{3.3 \times 6.8}{3.3 + 6.8} \text{k}\Omega
+\]
+
+\[
+R_{eq} \approx \frac{4.7}{5.7} \text{k}\Omega + \frac{22.44}{10.1} \text{k}\Omega
+\]
+
+\[
+R_{eq} \approx 0.824\text{k}\Omega + 2.22\text{k}\Omega
+\]
+
+\[
+R_{eq} \approx 3.04\text{k}\Omega
+\]
+
+
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \begin{circuitikz}
+          \draw (0,6) to[battery, l=10V] (0,0);
+          \draw (0,6) to[short] (3,6);
+          \draw (3,6) to[R, l=$R_1$,a=$4.7\text{k}\Omega$] (3,3);
+          \draw (3,6) to[short] (6,6) to[R, l=$R_2$,a=$3.3\text{k}\Omega$] (6,3);
+          \draw (3,3) to[R, l=$R_3$,a=$2.2\text{k}\Omega$] (6,3);
+          \draw (3,3) to[R, l=$R_5$,a=$1\text{k}\Omega$] (3,0);
+          \draw (6,3) to[R, l=$R_4$,a=$6.8\text{k}\Omega$] (6,0);
+          \draw (0,0) to[short] (6,0);
+          \fill (3,3) circle (3pt);  
+          \node[above] at (2.8,3) {\textbf{A}};
+          \fill (6,3) circle (3pt); 
+          \node[above] at (6.2,3) {\textbf{B}};
+      \end{circuitikz}
+      \caption{Original Circuit Diagram}
+      \label{fig:original_circuit}
+  \end{minipage}
+  \hfill
+  % Second Circuit (Thevenin Equivalent)
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \begin{circuitikz}
+          \draw (0,6) to[short] (0,0);
+          \draw (0,6) to[short] (3,6);
+          \draw (3,6) to[R, l=$R_1$,a=$4.7\text{k}\Omega$] (3,3);
+          \draw (3,6) to[short] (6,6) to[R, l=$R_2$,a=$3.3\text{k}\Omega$] (6,3);
+          \draw (3,3) to[R, l=$R_5$,a=$1\text{k}\Omega$] (3,0);
+          \draw (6,3) to[R, l=$R_4$,a=$6.8\text{k}\Omega$] (6,0);
+          \draw (0,0) to[short] (6,0);
+          \fill (3,3) circle (3pt);  
+          \node[above] at (2.8,3) {\textbf{A}};
+          \fill (6,3) circle (3pt); 
+          \node[above] at (6.2,3) {\textbf{B}};
+      \end{circuitikz}
+      \caption{Circuit for Finding $R_{eq}$}
+      \label{fig:thevenin_circuit}
+  \end{minipage}
+\end{figure}
+
+
+
+
+\newpage
+
+To determine the voltage across nodes \( A \) and \( B \) (\( V_A - V_B \)), \textbf{the voltage divider rule} is applied:
+
+\[
+V_A = V_{\text{source}} \times \frac{R_5}{R_1 + R_5}
+\]
+
+\[
+V_B = V_{\text{source}} \times \frac{R_4}{R_2 + R_4}
+\]
+
+Substituting the given values:
+
+\[
+V_A = 10V \times \frac{1\text{k}\Omega}{4.7\text{k}\Omega + 1\text{k}\Omega}
+\]
+
+\[
+V_B = 10V \times \frac{6.8\text{k}\Omega}{3.3\text{k}\Omega + 6.8\text{k}\Omega}
+\]
+
+Solving for each:
+
+\[
+V_A = 10V \times \frac{1}{5.7} = 10V \times 0.175 = 1.75V
+\]
+
+\[
+V_B = 10V \times \frac{6.8}{10.1} = 10V \times 0.673 = 6.73V
+\]
+
+Finally, the voltage difference across nodes \( A \) and \( B \) is:
+
+\[
+V_{AB} = V_A - V_B = 1.75V - 6.73V = -4.98V
+\]
+
+Since the result is negative, it means that node B is at a higher potential than node A.
+
+\[
+|V_{th}| = 4.98V
+\]
+
+The Norton current is given by:
+
+\[
+I_N = \frac{V_{th}}{R_{th}} = \frac{4.98V}{3.04k\Omega}
+\]
+
+\[
+I_N = \frac{4.98}{3040} A \approx 1.64 mA
+\]
+
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \begin{circuitikz}
+          % Thevenin Equivalent Circuit
+          \draw (0,4) to[battery,a=$V{th}$, l=4.98V] (0,0);
+          \draw (0,4) to[R, l=$R_{th}$, a=$3.04\text{k}\Omega$] (5,4) 
+          to[short] (6,4);
+          \draw (4.5,0) to[short] (0,0);
+          \draw (4.5,0) to[short] (6,0);
+          
+          % Marking Nodes
+          \fill (6,4) circle (3pt);  
+          \node[above] at (6.2,4) {\textbf{A}};
+          \fill (6,0) circle (3pt); 
+          \node[above] at (6.2,0) {\textbf{B}};
+      \end{circuitikz}
+      \caption{Thevenin Equivalent Circuit}
+      \label{fig:thevenin_equiv}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \begin{circuitikz}
+          % Norton Equivalent Circuit with Upward Current Source
+          \draw (0,0) to[isource, l=$I_N$, a=$1.64mA$] (0,4);
+          \draw (0,4) to[short] (5,4) 
+          to[short] (6,4);
+          \draw (4.5,4) to[R, l=$R_{N}$, a=$3.04\text{k}\Omega$] (4.5,0)
+          to[short] (0,0);
+          \draw (4.5,0) to[short] (6,0);
+          
+          % Marking Nodes
+          \fill (6,4) circle (3pt);  
+          \node[above] at (6.2,4) {\textbf{A}};
+          \fill (6,0) circle (3pt); 
+          \node[above] at (6.2,0) {\textbf{B}};
+      \end{circuitikz}
+      \caption{Norton Equivalent Circuit}
+      \label{fig:norton_equiv}
+  \end{minipage}
+\end{figure}
+
+\newpage
+
+\subsubsection{Pre Task 2}
+
+
+To determine the current through resistor \( R_4 \) in \textbf{Figure 5}, the Superposition Theorem is applied by considering each independent source separately. The steps are as follows:
+\begin{itemize}
+  \item \textbf{Step 1: Considering 10V only}
+  
+  When the 5V source is turned off by replacing it with a short circuit, the circuit simplifies as shown in \textbf{Figure 6}.
+
+  Using Nodal Analysis, the equation for node \(A\) is:
+
+  \[
+  \frac{V - 10}{2.2 \, \text{k}\Omega} + \frac{V - 10}{4.7 \, \text{k}\Omega} + \frac{V}{10 \, \text{k}\Omega} = 0
+  \]
+  
+  Multiply through by the LCM of \(2.2\), \(4.7\), and \(10\) (approximately \(103.4\)):
+  
+  \[
+  47(V - 10) + 22(V - 10) + 10.34V = 0
+  \]
+  
+  Expanding and simplifying:
+  
+  \[
+  (47 + 22 + 10.34)V = 690 \quad \Rightarrow \quad 79.34V = 690 \quad \Rightarrow \quad V = \frac{690}{79.34} \approx 8.7 \, \text{V}.
+  \]
+
+  \[
+  I_{R_4} = \frac{V - 10}{4.7 \, \text{k}\Omega} = \frac{8.7 - 10}{4.7} \, = -0.27 \text{mA}
+  \]
+
+\item \textbf{Step 2: Considering 5V only}
+
+When the 10V source is turned off by replacing it with a short circuit, the circuit simplifies as shown in \textbf{Figure 7}.
+
+Using Nodal Analysis, the equation for node \(B\) is:
+\[
+\frac{V - 5}{2.2 \, \text{k}\Omega} + \frac{V}{4.7 \, \text{k}\Omega} + \frac{V}{10 \, \text{k}\Omega} = 0
+\]
+
+Multiplying through by the LCM of the denominators (which is approximately \(47 \, \text{k}\Omega\)):
+
+\[
+47(V - 5) + 22(V) + 10.34(V) = 0
+\]
+
+Expanding and simplifying:
+
+\[
+47V - 235 + 22V + 10.34V = 0
+\]
+
+\[
+(47 + 22 + 10.34)V = 235
+\]
+
+\[
+79.34V = 235
+\]
+
+\[
+V = \frac{235}{79.34} \approx 2.96 \, \text{V}
+\]
+
+Now, the current through the \(4.7 \, \text{k}\Omega\) resistor is given by:
+
+\[
+I_{4.7} = \frac{V}{4.7 \, \text{k}\Omega} = \frac{2.96}{4.7} \, \text{mA} \approx 0.63 \, \text{mA}
+\]
+
+
+Summing the values obtained from the different equations:
+
+\[
+0.63 \, \text{mA} + (-0.27 \, \text{mA}) = 0.36 \, \text{mA}
+\]
+
+\end{itemize}
+\begin{figure}[H] 
+  \centering
+
+  \begin{minipage}{\textwidth}
+      \centering
+      \resizebox{0.8\textwidth}{!}{ % Resize circuit to 80% width
+      \begin{circuitikz}
+          \draw (0,5) to[battery,a=$V{1}$, l=5V] (0,0);
+          \draw (0,5) to[R, l=$R_2$,a=$2.2\text{k}\Omega$] (5,5);
+          \draw (5,5) to[R, l=$R_3$,a=$10\text{k}\Omega$] (10,5);
+          \draw (5,5) to[R, l=$R_4$,a=$4.7\text{k}\Omega$] (5,0);
+          \draw (0,5) to[short] (0,7) 
+          to[R, l=$R_1$,a=$6.8\text{k}\Omega$] (10,7)
+          to[short] (10,5);
+          \draw (10,0) to[battery,a=$V{2}$, l=10V] (10,5);
+          \draw (10,0) to[short] (0,0);
+      \end{circuitikz}
+      }
+      \caption{Original Circuit}
+      \label{fig:original_circuit}
+  \end{minipage}
+  
+  \vspace{1cm} % Adds space between the top circuit and side-by-side circuits
+
+  % Side-by-side circuits
+  \begin{minipage}{0.495\textwidth} % Reduce width for better spacing
+      \centering
+      \resizebox{1.0\textwidth}{!}{ % Resize smaller circuits
+      \begin{circuitikz}
+        \draw (0,5) to[short] (0,0);
+        \draw (0,5) to[R, l=$R_2$,a=$2.2\text{k}\Omega$] (5,5);
+        \draw (5,5) to[R, l=$R_3$,a=$10\text{k}\Omega$] (10,5);
+        \draw (5,5) to[R, l=$R_4$,a=$4.7\text{k}\Omega$] (5,0);
+        \draw (0,5) to[short] (0,7) 
+        to[R, l=$R_1$,a=$6.8\text{k}\Omega$] (10,7)
+        to[short] (10,5);
+        \draw (10,0) to[battery,a=$V{2}$, l=10V] (10,5);
+        \draw (10,0) to[short] (0,0);
+        \fill (5,5) circle (3pt);  
+        \node[above] at (5.2,5) {\textbf{A}};
+    \end{circuitikz}
+      }
+      \caption{Circuit with Only 10V Source}
+      \label{fig:only_10V}
+  \end{minipage}
+  \begin{minipage}{0.495\textwidth} % Reduce width for better spacing
+      \centering
+      \resizebox{1.0\textwidth}{!}{ % Resize smaller circuits
+      \begin{circuitikz}
+        \draw (0,5) to[battery,a=$V{1}$, l=5V] (0,0);
+        \draw (0,5) to[R, l=$R_2$,a=$2.2\text{k}\Omega$] (5,5);
+        \draw (5,5) to[R, l=$R_3$,a=$10\text{k}\Omega$] (10,5);
+        \draw (5,5) to[R, l=$R_4$,a=$4.7\text{k}\Omega$] (5,0);
+        \draw (0,5) to[short] (0,7) 
+        to[R, l=$R_1$,a=$6.8\text{k}\Omega$] (10,7)
+        to[short] (10,5);
+        \draw (10,0) to[short] (10,5);
+        \draw (10,0) to[short] (0,0);
+        \fill (5,5) circle (3pt);  
+        \node[above] at (5.2,5) {\textbf{B}};
+    \end{circuitikz}
+      }
+      \caption{Circuit with Only 5V Source}
+      \label{fig:only_5V}
+  \end{minipage}
+\end{figure}
+
+
+
+
+
+\newpage
+
+
+
+\subsection{Lab Tasks}
+
+This lab aims to determine the current through a specific resistor and the voltage across its nodes using Thevenin’s and Norton’s theorems. These methods simplify circuit analysis by representing complex networks with equivalent circuits. Additionally, the Superposition Theorem is used to analyze circuits with multiple independent sources by evaluating each source separately and summing the effects.
+\subsubsection{Task 1}
+
+The circuit depicted in Figure 1 was assembled on a breadboard using the required resistors and appropriate connections.
+
+
+\begin{enumerate}
+  \item The measured voltage between nodes A and B was found to be 2.097V.
+
+  \item The open-circuit voltage between nodes A and B (Vth) was measured as 4.978V.
+
+  \item To measure the short-circuit current, \( R_3 \) was replaced with a 1-ohm resistor, and the voltage drop \( V_d \) was recorded. Using Ohm's Law, the short-circuit current (\( I_{sc} \)) is calculated as:
+  \[
+  I_{sc} = \frac{V_d}{1 \Omega} ,  V_d = 1.62 \text{mV}
+  \]
+
+
+  \[
+  I_{sc} = 1.62 \text{mA}
+  \]
+
+  \item To calculate Thevenin's equivalent resistance, the following formula is used:
+
+  \[
+  4.978V = R_{\text{Thevenin}} \times 1.62 \text{mA}
+  \]
+  
+  \[
+  R_{\text{Thevenin}} = \frac{4.978V}{1.62 \text{mA}} = 3.072 \, \text{k}\Omega
+  \]
+
+  \item The theoretical Thevenin and Norton equivalent values were determined in the \textbf{Pre-Lab Task 1}, and their values are summarized in the table below:
+  
+  \begin{itemize}
+    \item Thevenin Voltage \( V_{th} = 4.98V \)
+    \item Thevenin Resistance \( R_{th} = 3.04 \, \text{k}\Omega \)
+    \item Norton Current \( I_N = 1.64 \, \text{mA} \)
+  \end{itemize}
+
+  \item To calculate the \( V_{{AB}} \) when \( 2.2 \text{k} \Omega\) resistor connected Voltage divider rule is applied as follows:
+
+  \[
+  V_{AB} = \frac{R_{\text{load}}}{R_{\text{th}} + R_{\text{load}}} \times V_{\text{th}} = \frac{2.2 \, \text{k}\Omega}{3.04 \, \text{k}\Omega + 2.2 \, \text{k}\Omega} \times 4.98V = 2.09V
+  \]
+
+  \item Using Ohm's Law in combination with the Current Divider Rule, \( V_{AB} \) is determined as follows:
+
+  \[
+  V_{AB} = \frac{R_{\text{th}}}{R_{\text{th}} + R_{\text{load}}} \times I_N \times R_{\text{load}}
+  \]
+  \[
+   = \frac{3.04 \, \text{k}\Omega}{3.04 \, \text{k}\Omega + 2.2 \, \text{k}\Omega} \times 1.64 \, \text{mA} \times 2.2 \, \text{k}\Omega
+  \]
+  \[
+  V_{AB} = 2.08V
+  \]
+
+  \item Using three \(1 \, \text{k}\Omega\) resistors, an approximate Thevenin resistance of \(3.04 \, \text{k}\Omega\) was obtained. After completing the circuit with the appropriate resistors and voltage source, voltage drop over \(2.2 \, \text{k}\Omega\)  resistor is measured as:
+  \[
+    V_{AB} = 2.168V
+  \]
+
+\end{enumerate}
+
+\newpage
+
+
+
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{|c|c|c|c|}
+  \hline
+  \textbf{Parameter}         & \textbf{Calculated Value} & \textbf{Measured Value} & \textbf{Error (\%)} \\
+  \hline
+  \( V_{AB} \) across \( R_3 \) \((V)\)       & 2.1      & 2.097     & 0.14\% \\   \hline
+  Open Circuit Voltage          \((V)\)       & 4.98     & 4.978     & 0.04\% \\   \hline
+  Short Circuit Current         \((mA)\)      & 1.64     & 1.62      & 1.22\% \\   \hline
+  \( R_{th} \)                  \((k\Omega)\) & 3.04     & 3.072     & 1.05\% \\   \hline
+  Voltage Over 2.2kΩ on Thevenin\((V)\)       & 2.09     & 2.168     & 3.73\% \\   \hline
+  \end{tabular}
+  \caption{Comparison of Calculated and Measured Values with Error Percentages}
+  \label{tab:comparison}
+\end{table}
+
+\noindent The error percentage is calculated using the following formula:
+
+\[
+\text{Error Percentage} = \left( \frac{|\text{Measured Value} - \text{Calculated Value}|}{\text{Calculated Value}} \right) \times 100\%
+\]
+
+\noindent
+The percentage error values in Table \ref{tab:comparison} indicate that the measured values are in close agreement with the theoretical calculations.
+
+
+
+
+\subsubsection{Task 2}
+
+\noindent 
+To determine the current passing through resistor \( R_4 \), the \textbf{Superposition Theorem} was applied. The circuits shown in \textbf{Figures 6 and 7} were constructed using a breadboard and the necessary resistors. The respective voltage sources were applied as specified. 
+
+
+\noindent After assembling the circuits, the current passing through \( R_4 \) was measured using the appropriate probes of a digital multimeter. The theoretical and measured values are summarized in the following table:
+
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{|c|c|c|}
+  \hline
+  \textbf{Condition}        & \textbf{Calculated Value (mA)} & \textbf{Measured Value (mA)} \\
+  \hline
+  10V on, 5V off           & -0.27                         & -0.28                        \\
+  \hline
+  5V on, 10V off           & 0.63                          & 0.63                         \\
+  \hline
+  \textbf{Total}           & \textbf{0.36}                 & \textbf{0.35}                \\
+  \hline
+  \end{tabular}
+  \caption{Comparison of Calculated and Measured Values for Current through \(R_4\)}
+  \label{tab:comparison}
+\end{table}
+
+
+\section{Conclusion}
+
+\subsubsection{Task 1}
+The circuit was converted into its Thevenin and Norton equivalents, determining $V_{th}$, $R_{th}$, $I_N$, and $V_{AB}$ while analyzing voltage drops. The results for the 2.2 k$\Omega$ resistor ($R_3$) confirm that the Thevenin Equivalent Circuit simplifies analysis, making it easier to determine terminal voltage and current through Norton transformation. Error percentages in Table 1 indicate consistency with theoretical values, with minor deviations likely due to component tolerances, placement inaccuracies, or signal distortions. Additionally, the three 1 k$\Omega$ resistors in the Thevenin circuit did not sum precisely to 3 k$\Omega$, introducing a systematic error affecting measurements.
+
+\subsubsection{Task 2}
+In Task 2, the superposition method was applied by constructing a common ground circuit and measuring currents while shorting each voltage source individually. Theoretical and experimental results were nearly identical, confirming the method's effectiveness in analyzing circuits with multiple sources. Error percentages in Table 2 were close to zero, indicating consistency with theoretical values. Minor deviations may stem from approximations, component tolerances, placement inaccuracies.
+\end{document}
