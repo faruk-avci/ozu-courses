@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OZU Courses — Ömer Faruk Avcı</title>
+  <meta name="description" content="Coursework portfolio for EE at Özyeğin University — labs, projects, and homework with inline viewers.">
+  <meta name="theme-color" content="#00338D">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-left">
+        <button class="menu-btn" id="menuBtn">&#9776;</button>
+        <div class="logo"><span class="logo-title">OZU Courses</span><span class="logo-sep"></span><span class="logo-name">Ömer Faruk Avcı</span></div>
+      </div>
+      <div class="header-right">
+        <div class="cmd-hint" id="cmdHint">Search files... <kbd class="kbd">Ctrl K</kbd></div>
+        <a href="https://github.com/faruk-avci/ozu-courses" target="_blank" rel="noopener" class="gh-link">GitHub</a>
+      </div>
+    </header>
+
+    <div class="overlay" id="overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-head">Explorer</div>
+      <div class="sb-search"><input type="text" id="filterInput" placeholder="Filter..."></div>
+      <div class="sb-tree" id="sbTree">
+        <div class="loading" id="treeLoad"><div class="spinner"></div> Loading...</div>
+      </div>
+    </aside>
+
+    <div class="main-wrap">
+      <div class="tabs-bar" id="tabsBar"></div>
+      <div class="crumbs" id="crumbs"></div>
+      <div class="content" id="content">
+        <div class="welcome" id="welcomeView">
+          <h1>Course Repository</h1>
+          <p class="sub">Electrical &amp; Electronics Engineering coursework at Özyeğin University. Click a course below or press <kbd class="kbd">Ctrl K</kbd> to search.</p>
+          <div class="course-grid" id="courseGrid"></div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <button class="lb-x" id="lbClose">&#10005;</button>
+    <img id="lbImg" src="" alt="">
+  </div>
+
+  <div class="cmd-overlay" id="cmdOverlay">
+    <div class="cmd-box">
+      <input class="cmd-input" id="cmdInput" placeholder="Type to search files..." autocomplete="off">
+      <div class="cmd-list" id="cmdList"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-latex.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-arduino.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
