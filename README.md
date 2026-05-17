@@ -1,8 +1,10 @@
-# ozu-courses
+# OZU Courses
 
-A collection of my undergraduate Electrical and Electronics Engineering coursework at Ozyegin University.
+Electrical & Electronics Engineering coursework at Özyeğin University.
 
-## Courses
+**[View Portfolio Online →](https://faruk-avci.github.io/ozu-courses/)**
 
-- EE-350
-- PHYS-551
+- **EE-202** — Circuit Theory Lab
+- **EE-350** — Analog Electronics
+- **EE-493** — Power Electronics
+- **PHYS-551** — Computational Physics
