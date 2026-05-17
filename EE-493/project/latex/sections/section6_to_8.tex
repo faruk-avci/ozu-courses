@@ -1,0 +1,141 @@
+%------------------------------
+% Section 6 - Efficiency & Loss Analysis
+%------------------------------
+\section*{6 Efficiency \& Loss Analysis}
+
+\subsection*{6.1 Component-Level Loss Breakdown}
+
+Table~\ref{tab:losses} presents the power dissipation of each component as reported by the LTspice efficiency analysis at $V_{in} = 400$\,V.
+
+\begin{table}[H]
+\centering
+\caption{Component power dissipation at $V_{in} = 400$\,V (nominal).}
+\label{tab:losses}
+\begin{tabular}{llcc}
+\toprule
+\textbf{Component} & \textbf{Description} & \textbf{$I_{rms}$ (mA)} & \textbf{Dissipation (mW)} \\
+\midrule
+\multicolumn{4}{l}{\textit{Semiconductor Losses}} \\
+$D_1$ (MUR460)      & +15\,V rectifier       & 2536 & 1662 \\
+$M_1$ (STP8NM60)    & Primary MOSFET         &  327 &  699 \\
+$D_2$ (MBR20100CT)  & $-7$\,V rectifier      & 1122 &  397 \\
+$D_3$ (VS-E5TH0812) & Snubber diode          &  138 &  180 \\
+\midrule
+\multicolumn{4}{l}{\textit{Snubber \& Damping Losses}} \\
+$R_3$ (5.1\,k$\Omega$) & RCD snubber resistor &   21 & 2353 \\
+$R_7$ (15\,$\Omega$)   & RC snubber (+15\,V)  &  235 &  830 \\
+$R_8$ (15\,$\Omega$)   & RC snubber ($-7$\,V) &  110 &  182 \\
+\midrule
+\multicolumn{4}{l}{\textit{Magnetic \& Winding Losses}} \\
+$L_3$ ($R_{ser}=1.2\,\Omega$)   & Primary winding  &  355 & 152 \\
+$C_1$ ($R_{ESR}=30\,\text{m}\Omega$) & Output cap ESR  & 1982 & 118 \\
+$L_1$ ($R_{ser}=15\,\text{m}\Omega$)  & Secondary 1      & 2550 &  98 \\
+$L_2$ ($R_{ser}=50\,\text{m}\Omega$)  & Secondary 2      & 1128 &  64 \\
+\midrule
+\multicolumn{4}{l}{\textit{Other}} \\
+$R_5$ (0.33\,$\Omega$)            & Current sense    &  323 &  34 \\
+$L_7$, $L_8$                      & Post-filter inductors &  --- &  27 \\
+$U_2$ (LT1243)                    & Controller       &   40 &  22 \\
+\midrule
+\multicolumn{2}{l}{\textbf{Total losses}} & & $\mathbf{\approx 6.82}$\,\textbf{W} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{6.2 Loss Distribution Analysis}
+
+The biggest losses at 400\,V nominal are:
+\begin{enumerate}
+    \item \textbf{RCD snubber ($R_3$): 2.35\,W (34.5\%)} -- The single biggest loss. This is expected for a flyback converter since leakage inductance energy has to be dissipated every switching cycle.
+    \item \textbf{Output rectifier $D_1$: 1.66\,W (24.3\%)} -- Forward voltage drop losses in the ultrafast diode at the high-current +15\,V output.
+    \item \textbf{RC snubbers ($R_7$+$R_8$): 1.01\,W (14.8\%)} -- Secondary-side ringing suppression.
+    \item \textbf{Primary MOSFET ($M_1$): 0.70\,W (10.3\%)} -- Combined conduction ($R_{DS,on}$) and switching losses.
+    \item \textbf{Diode $D_2$: 0.40\,W (5.9\%)} -- Schottky rectifier on the $-7$\,V rail.
+\end{enumerate}
+
+These five categories account for approximately 90\% of all converter losses.
+
+\subsection*{6.3 Efficiency Across Input Range}
+
+The efficiency variation across input voltage is caused by how the different losses change with input voltage:
+\begin{itemize}
+    \item At $V_{in} = 300$\,V ($\eta = 86.8\%$): Lower drain voltage stress reduces MOSFET switching losses and snubber dissipation. The higher duty cycle results in lower peak currents.
+    \item At $V_{in} = 500$\,V ($\eta = 80.4\%$): Higher voltage across the MOSFET increases switching losses. The snubber must absorb more energy per cycle due to higher reflected voltage. However, input power increases only marginally due to current-mode control maintaining constant output power.
+\end{itemize}
+
+\subsection*{6.4 Thermal Analysis}
+
+An important part of the design is checking that no component goes above its maximum junction temperature at steady state. The junction temperature is calculated as:
+\begin{equation}
+T_J = T_A + P_{diss} \cdot R_{\theta JA}
+\end{equation}
+where $T_A = 25\,^\circ$C is the ambient temperature and $R_{\theta JA}$ is the junction-to-ambient thermal resistance. When a heatsink is used, the total thermal resistance becomes $R_{\theta JC} + R_{\theta CS} + R_{\theta SA}$, where $R_{\theta CS}$ is the case-to-sink and $R_{\theta SA}$ is the sink-to-ambient resistance.
+
+Table~\ref{tab:thermal} presents the thermal analysis for all critical semiconductor and power components.
+
+\begin{table}[H]
+\centering
+\caption{Junction temperature analysis of critical components ($T_A = 25\,^\circ$C).}
+\label{tab:thermal}
+\begin{tabular}{lccccl}
+\toprule
+\textbf{Component} & \textbf{$P_{diss}$} & \textbf{$R_{\theta JA}$} & \textbf{$T_J$ (calc.)} & \textbf{$T_{J,max}$} & \textbf{Status} \\
+ & (W) & ($^\circ$C/W) & ($^\circ$C) & ($^\circ$C) & \\
+\midrule
+$M_1$ (STP8NM60) & 0.699 & 62.5 & 68.7 & 150 & Safe \\
+$D_1$ (MUR460) & 1.662 & 75.0 & 149.7 & 175 & Marginal \\
+$D_2$ (MBR20100CT) & 0.397 & 60.0 & 48.8 & 150 & Safe \\
+$D_3$ (VS-E5TH0812) & 0.180 & 75.0 & 38.5 & 175 & Safe \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{MOSFET ($M_1$: STP8NM60)}
+The STP8NM60 in a TO-220 package has $R_{\theta JC} = 1.25\,^\circ$C/W and $R_{\theta JA} = 62.5\,^\circ$C/W. With a dissipation of 699\,mW:
+\begin{equation}
+T_J = 25 + 0.699 \times 62.5 = 68.7\,^\circ\text{C}
+\end{equation}
+This is well below the 150$\,^\circ$C maximum, providing a generous thermal margin of 81.3$\,^\circ$C. No heatsink is required for the MOSFET.
+
+\subsubsection*{Output Rectifier ($D_1$: MUR460)}
+The MUR460 in a TO-220AC package has $R_{\theta JA} \approx 75\,^\circ$C/W (free-air, no heatsink). With the highest dissipation of any component at 1.662\,W:
+\begin{equation}
+T_J = 25 + 1.662 \times 75 = 149.7\,^\circ\text{C}
+\end{equation}
+Although this is below the $T_{J,max} = 175\,^\circ$C rating, the margin is only 25.3$\,^\circ$C, which is marginal for reliable long-term operation. A small heatsink with $R_{\theta SA} \leq 20\,^\circ$C/W would reduce the junction temperature to approximately $25 + 1.662 \times (2.3 + 1.0 + 20) \approx 63.7\,^\circ$C, providing a comfortable operating margin.
+
+\subsubsection*{Schottky Rectifier ($D_2$: MBR20100CT)}
+The MBR20100CT dissipates only 397\,mW, yielding $T_J = 25 + 0.397 \times 60 = 48.8\,^\circ$C. This is far below the 150$\,^\circ$C maximum. No heatsink is required.
+
+\subsubsection*{Snubber Diode ($D_3$: VS-E5TH0812)}
+With only 180\,mW dissipation: $T_J = 25 + 0.180 \times 75 = 38.5\,^\circ$C. The thermal margin to the 175$\,^\circ$C maximum is 136.5$\,^\circ$C. No heatsink is required.
+
+\subsubsection*{Snubber Resistor ($R_3$: 5.1\,k$\Omega$)}
+The RCD snubber resistor is the single highest-dissipation component at 2.353\,W. This exceeds the rating of standard $\frac{1}{4}$\,W or $\frac{1}{2}$\,W resistors. A wirewound or thick-film power resistor rated for at least 3\,W (e.g., a 5\,W rated package) must be used to ensure adequate thermal derating and long-term reliability.
+
+\subsubsection*{Thermal Summary}
+All semiconductor junction temperatures remain below their maximum ratings without heatsinks. However, $D_1$ (MUR460) operates with a reduced margin and benefits from a small heatsink in a practical implementation. The snubber resistor $R_3$ requires a power-rated component. No other components present thermal concerns under nominal operating conditions.
+
+%------------------------------
+% Section 7 - Discussion
+%------------------------------
+\section*{7 Conclusion}
+
+This report covered the design, analysis, and simulation of an isolated flyback DC-DC converter with a 300--500\,V input range and dual outputs of +15\,V and $-7$\,V. The LT1243 current-mode PWM controller with an opto-isolated feedback loop keeps the output regulated across the full input range.
+
+The simulation shows that all specs are met: both output voltages are within 1.3\% of target, efficiency ranges from 80.4\% to 86.8\% (above the 75\% minimum), and output ripple is well below 400\,mV$_{pp}$. The loss analysis shows that the RCD snubber and the output rectifier diode are the main loss sources, making up about 59\% of total losses.
+
+The current-mode control with opto-isolated feedback gives stable regulation and built-in overcurrent protection, and the snubber networks keep semiconductor voltage stress within safe limits. Overall, the design shows that the flyback topology works well for this type of isolated, multi-output power supply.
+
+%------------------------------
+% References
+%------------------------------
+\section*{References}
+\begin{enumerate}
+    \item Linear Technology, ``LT1241/LT1242/LT1243/LT1244 -- Current Mode PWM Controllers,'' Datasheet, Analog Devices.
+    \item STMicroelectronics, ``STP8NM60 -- N-channel 600\,V, 0.9\,$\Omega$, 6\,A MDmesh\textsuperscript{TM} Power MOSFET,'' Datasheet.
+    \item ON Semiconductor, ``MUR460 -- Ultrafast Rectifier, 4\,A, 600\,V,'' Datasheet.
+    \item ON Semiconductor, ``MBR20100CT -- Switchmode Power Rectifier, 20\,A, 100\,V,'' Datasheet.
+    \item Vishay, ``4N25 -- Optocoupler, Phototransistor Output,'' Datasheet.
+    \item R.\,W. Erickson and D. Maksimovi\'{c}, \textit{Fundamentals of Power Electronics}, 3rd ed. Springer, 2020.
+\end{enumerate}

@@ -1,0 +1,41 @@
+%------------------------------
+% Section 4 - Feedback & Control Loop
+%------------------------------
+\section*{4 Feedback \& Control Loop Design}
+
+To regulate the output voltage while keeping isolation between the high-voltage primary and low-voltage secondary, an opto-isolated feedback loop is used. This section covers the control loop design and component selection.
+
+\subsection*{4.1 Voltage Sensing \& Reference}
+
+The +15\,V output is sensed through a resistor divider formed by $R_{upper1} = 10\,\text{k}\Omega$ and $R_6 = 2\,\text{k}\Omega$:
+\begin{equation}
+V_{sense} = V_{out1} \cdot \frac{R_6}{R_{upper1} + R_6} = 15 \times \frac{2\,\text{k}}{10\,\text{k} + 2\,\text{k}} = 2.5\,\text{V}
+\end{equation}
+
+This sensed voltage is compared against a $V_{ref} = 2.5\,\text{V}$ reference (V2) by the error amplifier U4 (UniversalOpAmp2). When $V_{out1}$ deviates from 15\,V, the error signal drives the optocoupler to adjust the primary-side duty cycle accordingly.
+
+\subsection*{4.2 Error Amplifier \& Optocoupler (U3: 4N25)}
+
+The error amplifier U4 compares $V_{sense}$ to $V_{ref}$ and drives the LED of the 4N25 optocoupler through a pair of $1.5\,\text{k}\Omega$ current-limiting resistors. The optocoupler provides the required galvanic isolation, translating the secondary-side error signal into a current that modulates the \texttt{FB}/\texttt{COMP} pins of the primary-side LT1243 controller.
+
+The signal path is:
+\begin{enumerate}
+    \item $V_{out1}$ deviates $\rightarrow$ divider output changes
+    \item Error amplifier U4 detects deviation from $V_{ref}$
+    \item U4 output drives 4N25 LED current
+    \item 4N25 phototransistor modulates LT1243 \texttt{FB} pin
+    \item LT1243 adjusts PWM duty cycle to correct $V_{out1}$
+\end{enumerate}
+
+\subsection*{4.3 Compensation Network}
+
+A Type-II compensator is implemented around U4 using $R_{10} = 22\,\text{k}\Omega$ and $C_{11} = 100\,\text{nF}$:
+\begin{equation}
+f_{zero} = \frac{1}{2\pi \cdot R_{10} \cdot C_{11}} = \frac{1}{2\pi \times 22\times10^3 \times 100\times10^{-9}} \approx 72.3\,\text{Hz}
+\end{equation}
+
+A $C_5 = 2.2\,\text{nF}$ capacitor on the optocoupler side adds high-frequency roll-off to keep switching noise out of the feedback signal. The compensation provides enough phase margin for stability while keeping sufficient bandwidth for transient response across the input range.
+
+\subsection*{4.4 Cross-Regulation}
+
+Only $V_{out1}$ is directly regulated by the feedback loop; $V_{out2}$ depends on cross-regulation through the transformer coupling. With $k = 1$, the turns ratio fixes the voltage relationship between outputs. The simulation results in Section~5 show that $V_{out2}$ stays at $-6.91$\,V across all input voltages, which is only 1.3\% off from the $-7$\,V target.

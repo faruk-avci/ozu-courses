@@ -1,0 +1,105 @@
+\documentclass[12pt]{article}
+
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{circuitikz}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+
+    % University logo
+    \includegraphics[width=0.45\textwidth]{images/ozu_logo.png}\\[3cm]
+
+    % Course
+    {\large \textbf{EE 493 -- Power Electronics}}\\[1cm]
+
+    % Semester
+    {\large \textbf{Spring 2025/26}}\\[1cm]
+
+    % Lab number
+    {\large \textbf{TERM PROJECT}}\\[1cm]
+
+    % Lab title
+    {\large \textbf{Design of an Isolated Flyback DC-DC Converter}}\\[5cm]
+
+    % Submission info
+    \begin{center}
+        {\normalsize \textbf{Submitted by:} Ömer Faruk AVCI}\\[0.4cm]
+        {\normalsize \textbf{Student ID:} S034113}\\[0.4cm]
+        {\normalsize \textbf{Date of Submission:} \today}
+    \end{center}
+
+\end{titlepage}
+
+%------------------------------
+% Introduction
+%------------------------------
+\section*{1 Introduction}
+This term project covers the design, calculation, and simulation of a DC-DC Flyback converter operating over the 300V to 500V input range. The converter needs to provide two isolated outputs: a +15V rail and a -7V rail, while keeping efficiency above 75\% and output voltage ripple below 400 mV peak-to-peak. The report goes through topology selection, component value derivation, simulation results, power calculations, efficiency, and thermal analysis. \\
+\newline
+\noindent   
+The following contents of the report is organized as follows: Section~2 provides a topology overview detailing the flyback architecture and its subsystems. Section~3 presents the complete design calculations and component selection methodology. Section~4 discusses the isolated feedback and control loop design. Section~5 presents the LTspice simulation results including output waveforms and efficiency measurements. Section~6 provides a detailed efficiency and loss analysis. Section~7 discusses design trade-offs and limitations, and Section~8 concludes the report.
+
+
+\subsection*{Declaration of AI Usage}
+In compliance with the course's Principles for the Responsible Use of AI, I acknowledge the use of AI tools (Google Gemini) during the preparation of this term project. The core engineering design, LTspice simulations, component parameter synthesis, and raw data analysis are entirely my own original work. Gemini was utilized as a supplementary writing assistant to finalize the document, refine the academic phrasing of the technical explanations, and format the mathematical equations into LaTeX. All AI-generated text was critically reviewed, verified, and edited to ensure absolute technical accuracy and alignment with my simulation results.
+
+
+\newpage
+%------------------------------
+% Topology Overview
+%------------------------------
+\section*{2 Topology Overview}
+
+The flyback converter topology is used for this project and implemented in LTspice. Although it is the assigned topology, it is also a good fit for these requirements. Unlike Forward or Half-Bridge converters, the Flyback stores energy in the primary magnetizing inductance when the MOSFET is on, and transfers it to the secondary windings during the off-time. This gives two main benefits: first, there is no need for secondary-side filter inductors, which saves space and cost. Second, generating opposite output polarities (+15 V and -7 V) is done simply by reversing the winding direction. Cross-regulation between the outputs comes from the shared transformer core.
+
+\subsection*{2.1 Controller}
+
+The LT1243 current-mode PWM controller is used to regulate energy transfer. It has built-in input voltage feed-forward for good transient response across the 300 V--500 V range, and provides pulse-by-pulse current limiting to protect the MOSFET. The $\approx115~kHz$ switching frequency is a good tradeoff between transformer size and switching losses.
+
+\subsection*{2.2 Mosfet and Snubber Circuit}
+
+The primary side sees high voltage stress (up to 500 V input plus reflected secondary voltage), so a power MOSFET is paired with an RCD snubber network. The leakage inductance energy and the clamping design are analyzed in Section 3.2.
+
+\subsection*{2.3 Transformer}
+
+The high-frequency transformer sets the primary magnetizing inductance and the secondary turns ratios needed for the +15 V and -7 V outputs. The winding inductance calculations and coupling setup are covered in Section 3.1.
+
+\subsection*{2.4 Secondary Rectification and Output Filters}
+
+The secondary side uses different diode types -- an Ultrafast diode for the +15 V output and a Schottky diode for the -7 V output -- along with LC filters to rectify the output and reduce ripple. Component selection for these is discussed in Section 3.3.
+
+\subsection*{2.5 Feedback Loop}
+
+To regulate the output voltage while keeping primary-secondary isolation, an opto-isolated feedback loop with an error amplifier and a 4N25 optocoupler is used. The control loop design is explained in Section 4.
+
+\newpage
+%------------------------------
+% Include remaining sections
+%------------------------------
+\input{sections/section3}
+
+\newpage
+\input{sections/section4}
+
+\newpage
+\input{sections/section5}
+
+\newpage
+\input{sections/section6_to_8}
+
+\end{document}

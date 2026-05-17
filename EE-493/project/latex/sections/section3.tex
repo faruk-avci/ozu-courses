@@ -1,0 +1,88 @@
+%------------------------------
+% Section 3 - Design Calculations
+%------------------------------
+\section*{3 Design Calculations \& Component Selection}
+
+This section presents the mathematical derivations used to determine the component values within the converter. The design targets are summarized in Table~\ref{tab:specs}.
+
+\begin{table}[H]
+\centering
+\caption{Design Specifications}
+\label{tab:specs}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Parameter} & \textbf{Symbol} & \textbf{Value} \\
+\midrule
+Input voltage range & $V_{in}$ & 300--500\,V \\
+Output voltage 1 & $V_{out1}$ & +15\,V \\
+Output voltage 2 & $V_{out2}$ & $-7$\,V \\
+Load resistance (both) & $R_L$ & 10\,$\Omega$ \\
+Output power (15\,V rail) & $P_{out1}$ & 22.5\,W \\
+Output power ($-7$\,V rail) & $P_{out2}$ & 4.9\,W \\
+Minimum efficiency & $\eta_{min}$ & 75\% \\
+Max output ripple & $\Delta V_{pp}$ & $<400$\,mV \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{3.1 Transformer Design and Winding Synthesis}
+
+The primary magnetizing inductance $L_p = 200\,\mu$H is a given project parameter. The secondary winding inductances are calculated from the required turns ratios for the two outputs. For a flyback converter, the output voltage relates to the input voltage, turns ratio, and duty cycle as:
+\begin{equation}
+V_{out} = V_{in} \cdot \frac{N_s}{N_p} \cdot \frac{D}{1-D}
+\label{eq:flyback}
+\end{equation}
+
+Assuming a nominal duty cycle of $D \approx 14.4\%$ at a $400$\,V input to maintain discontinuous or boundary conduction mode, the required primary-to-secondary turns ratio for the +15\,V output is calculated as:
+\begin{equation}
+\frac{N_p}{N_{s1}} = \frac{V_{in}}{V_{out1}} \cdot \frac{D}{1-D} = \frac{400}{15} \cdot \frac{0.144}{0.856} \approx 4.47
+\end{equation}
+
+In SPICE, the turns ratio is set by the square root of the inductance ratio. With the primary at $200\,\mu$H, the secondary inductance $L_1$ for the +15\,V rail is:
+\begin{equation}
+L_1 = L_p \cdot \left(\frac{N_{s1}}{N_p}\right)^2 = 200\,\mu\text{H} \cdot \left(\frac{1}{4.47}\right)^2 \approx 10\,\mu\text{H}
+\end{equation}
+
+Applying the same derivation for the $-7$\,V output yields a required turns ratio of $N_p/N_{s2} \approx 9.53$. The corresponding secondary inductance $L_2$ is calculated as:
+\begin{equation}
+L_2 = L_p \cdot \left(\frac{N_{s2}}{N_p}\right)^2 = 200\,\mu\text{H} \cdot \left(\frac{1}{9.53}\right)^2 \approx 2.2\,\mu\text{H}
+\end{equation}
+
+The \texttt{K1 L1 L2 L3 1} SPICE directive sets unity coupling ($k=1$) between the windings. To model real-world imperfections, $0.1\,\mu$H leakage inductances are placed in series with each secondary winding, and a $13\,\mu$H leakage inductance on the primary side simulates the energy that the snubber must absorb.
+
+\subsection*{3.2 Primary-Side Power Stage}
+
+The primary MOSFET must handle the maximum input voltage, the reflected secondary voltage, and the leakage inductance spike. The worst-case drain-to-source voltage is:
+\begin{equation}
+V_{DS,max} = V_{in,max} + V_{out1} \cdot \left(\frac{N_p}{N_{s1}}\right) + V_{spike} = 500 + 15 \cdot 4.47 + V_{spike} \approx 567\,\text{V} + V_{spike}
+\end{equation}
+
+The STP8NM60 MOSFET is selected for this role. It is rated at 600\,V, which gives enough margin when used with the snubber. It also has a low gate charge ($Q_g$) and an $R_{DS,on}$ of $0.9\,\Omega$ , which helps reduce both conduction and switching losses since the gate charges faster through the Miller plateau.
+
+A $10\,\Omega$ gate drive resistor limits the peak gate current and reduces ringing. For peak current mode control, a $0.33\,\Omega$ sense resistor at the MOSFET source feeds the LT1243's \texttt{Isense} pin, which has a 1\,V threshold. This caps the primary current at $I_{pk,max} = 1\,\text{V} / 0.33\,\Omega \approx 3.03\,\text{A}$, providing built-in overcurrent protection on every switching cycle.
+
+When the MOSFET turns off, the energy in the $13\,\mu$H primary leakage inductance causes a voltage spike. An RCD snubber ($5.1\,\text{k}\Omega$ resistor, $33\,\text{nF}$ capacitor, and a 1200\,V fast-recovery diode VS-E5TH0812) clamps this spike. The power dissipated by the snubber resistor per cycle is:
+\begin{equation}
+P_{snubber} = \frac{1}{2} L_{leak} \cdot I_{pk}^2 \cdot f_{sw} = \frac{1}{2} \times 13\,\mu\text{H} \times (1.78\,\text{A})^2 \times 115\,\text{kHz} \approx 2.37\,\text{W}
+\end{equation}
+At nominal load the peak current is $1.78\,\text{A}$, which gives about $2.35\,\text{W}$ of continuous dissipation in the simulation, confirming the component sizing is adequate.
+
+\subsection*{3.3 Secondary Rectification \& Output Filters}
+
+The rectifier choice depends on the voltage and current stress on each output. The +15\,V rail, which carries more current and sees higher reverse voltage, uses the MUR460 ultrafast diode (600\,V, 75\,ns recovery time). The $-7$\,V rail uses the MBR20100CT Schottky diode, which has almost no reverse recovery loss and a low 0.55\,V forward drop, helping efficiency on this lower-voltage output. Both diodes have RC snubbers ($15\,\Omega$ and $1\,\text{nF}$, $\tau = 15\,\text{ns}$) to damp parasitic ringing.
+
+The $1000\,\mu$F bulk output capacitors set the main ripple voltage. The ripple depends on the capacitor's ESR and the discharge during the off-time:
+\begin{equation}
+\Delta V_{out1} \approx \frac{I_{out1} \cdot D}{f_{sw} \cdot C_{out}} + I_{out1} \cdot R_{ESR} = \frac{1.5 \times 0.144}{115\times10^3 \times 1000\times10^{-6}} + 1.5 \times 0.03 \approx 46.9\,\text{mV}
+\end{equation}
+
+A post-LC filter further reduces this ripple. For the 15\,V output, $10\,\mu$H and $100\,\mu$F give a cutoff of about 5.03\,kHz. The $-7$\,V filter uses $2.2\,\mu$H and $100\,\mu$F (cutoff 10.7\,kHz). Both cutoffs are well below the 115\,kHz switching frequency, giving over 20\,dB of additional attenuation and keeping the final ripple in the millivolt range.
+
+\subsection*{3.4 LT1243 Controller Configuration}
+
+The LT1243 oscillator frequency is programmed by the $R_t/C_t$ timing network. Using a $10\,\text{k}\Omega$ resistor and a $1.5\,\text{nF}$ capacitor, the switching frequency is calculated as:
+\begin{equation}
+f_{sw} \approx \frac{1.72}{R_t \cdot C_t} = \frac{1.72}{10\times10^3 \times 1.5\times10^{-9}} \approx 115\,\text{kHz}
+\end{equation}
+
+This frequency is a good balance between keeping the transformer small and limiting switching losses. The \texttt{COMP} pin receives the error signal from the isolated feedback loop, and the controller's current-mode architecture provides input voltage feed-forward, which helps maintain stable duty-cycle regulation across the 300\,V to 500\,V input range.
