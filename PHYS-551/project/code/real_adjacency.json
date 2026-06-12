@@ -1,0 +1,244 @@
+{
+    "Şile": [
+        "Beykoz",
+        "Pendik",
+        "Çekmeköy"
+    ],
+    "Silivri": [
+        "Büyükçekmece",
+        "Çatalca"
+    ],
+    "Büyükçekmece": [
+        "Arnavutköy",
+        "Beylikdüzü",
+        "Esenyurt",
+        "Silivri",
+        "Çatalca"
+    ],
+    "Çatalca": [
+        "Arnavutköy",
+        "Büyükçekmece",
+        "Silivri"
+    ],
+    "Tuzla": [
+        "Pendik"
+    ],
+    "Pendik": [
+        "Kartal",
+        "Sancaktepe",
+        "Sultanbeyli",
+        "Tuzla",
+        "Çekmeköy",
+        "Şile"
+    ],
+    "Sultanbeyli": [
+        "Kartal",
+        "Pendik",
+        "Sancaktepe"
+    ],
+    "Kartal": [
+        "Maltepe",
+        "Pendik",
+        "Sancaktepe",
+        "Sultanbeyli"
+    ],
+    "Sancaktepe": [
+        "Ataşehir",
+        "Kartal",
+        "Maltepe",
+        "Pendik",
+        "Sultanbeyli",
+        "Çekmeköy",
+        "Ümraniye"
+    ],
+    "Çekmeköy": [
+        "Beykoz",
+        "Pendik",
+        "Sancaktepe",
+        "Ümraniye",
+        "Şile"
+    ],
+    "Maltepe": [
+        "Ataşehir",
+        "Kadıköy",
+        "Kartal",
+        "Sancaktepe"
+    ],
+    "Kadıköy": [
+        "Ataşehir",
+        "Maltepe",
+        "Üsküdar"
+    ],
+    "Ataşehir": [
+        "Kadıköy",
+        "Maltepe",
+        "Sancaktepe",
+        "Ümraniye",
+        "Üsküdar"
+    ],
+    "Üsküdar": [
+        "Ataşehir",
+        "Beykoz",
+        "Beşiktaş",
+        "Kadıköy",
+        "Ümraniye"
+    ],
+    "Ümraniye": [
+        "Ataşehir",
+        "Beykoz",
+        "Sancaktepe",
+        "Çekmeköy",
+        "Üsküdar"
+    ],
+    "Beykoz": [
+        "Sarıyer",
+        "Çekmeköy",
+        "Ümraniye",
+        "Üsküdar",
+        "Şile"
+    ],
+    "Beyoğlu": [
+        "Beşiktaş",
+        "Fatih",
+        "Kağıthane",
+        "Şişli"
+    ],
+    "Beşiktaş": [
+        "Beyoğlu",
+        "Sarıyer",
+        "Üsküdar",
+        "Şişli"
+    ],
+    "Kağıthane": [
+        "Beyoğlu",
+        "Eyüpsultan",
+        "Gaziosmanpaşa",
+        "Sarıyer",
+        "Şişli"
+    ],
+    "Sarıyer": [
+        "Beykoz",
+        "Beşiktaş",
+        "Eyüpsultan",
+        "Kağıthane"
+    ],
+    "Şişli": [
+        "Beyoğlu",
+        "Beşiktaş",
+        "Kağıthane"
+    ],
+    "Arnavutköy": [
+        "Başakşehir",
+        "Büyükçekmece",
+        "Esenyurt",
+        "Eyüpsultan",
+        "Çatalca"
+    ],
+    "Avcılar": [
+        "Başakşehir",
+        "Beylikdüzü",
+        "Esenyurt",
+        "Küçükçekmece"
+    ],
+    "Bahçelievler": [
+        "Bakırköy",
+        "Bağcılar",
+        "Güngören",
+        "Küçükçekmece"
+    ],
+    "Bakırköy": [
+        "Bahçelievler",
+        "Güngören",
+        "Küçükçekmece",
+        "Zeytinburnu"
+    ],
+    "Bayrampaşa": [
+        "Esenler",
+        "Fatih",
+        "Gaziosmanpaşa",
+        "Zeytinburnu"
+    ],
+    "Bağcılar": [
+        "Bahçelievler",
+        "Başakşehir",
+        "Esenler",
+        "Güngören",
+        "Küçükçekmece"
+    ],
+    "Başakşehir": [
+        "Arnavutköy",
+        "Avcılar",
+        "Bağcılar",
+        "Esenler",
+        "Esenyurt",
+        "Eyüpsultan",
+        "Küçükçekmece",
+        "Sultangazi"
+    ],
+    "Beylikdüzü": [
+        "Avcılar",
+        "Büyükçekmece",
+        "Esenyurt"
+    ],
+    "Esenler": [
+        "Bayrampaşa",
+        "Bağcılar",
+        "Başakşehir",
+        "Gaziosmanpaşa",
+        "Güngören",
+        "Sultangazi"
+    ],
+    "Esenyurt": [
+        "Arnavutköy",
+        "Avcılar",
+        "Başakşehir",
+        "Beylikdüzü",
+        "Büyükçekmece"
+    ],
+    "Eyüpsultan": [
+        "Arnavutköy",
+        "Başakşehir",
+        "Kağıthane",
+        "Sarıyer",
+        "Sultangazi"
+    ],
+    "Fatih": [
+        "Bayrampaşa",
+        "Beyoğlu",
+        "Gaziosmanpaşa",
+        "Zeytinburnu"
+    ],
+    "Gaziosmanpaşa": [
+        "Bayrampaşa",
+        "Esenler",
+        "Fatih",
+        "Kağıthane",
+        "Sultangazi"
+    ],
+    "Güngören": [
+        "Bahçelievler",
+        "Bakırköy",
+        "Bağcılar",
+        "Esenler",
+        "Zeytinburnu"
+    ],
+    "Sultangazi": [
+        "Başakşehir",
+        "Esenler",
+        "Eyüpsultan",
+        "Gaziosmanpaşa"
+    ],
+    "Zeytinburnu": [
+        "Bakırköy",
+        "Bayrampaşa",
+        "Fatih",
+        "Güngören"
+    ],
+    "Küçükçekmece": [
+        "Avcılar",
+        "Bahçelievler",
+        "Bakırköy",
+        "Bağcılar",
+        "Başakşehir"
+    ]
+}
