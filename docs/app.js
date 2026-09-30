@@ -19,6 +19,7 @@
   const treeLoad=$('treeLoad'), courseGrid=$('courseGrid');
 
   let tree=null, activeRow=null, tabs=[], activeTabId=null, flatFiles=[];
+  let pdfObjectUrl=null, pdfLoadId=0;
   let fc=0, dc=0;
 
   async function init() {
@@ -195,6 +196,7 @@
 
   // === SHOW FOLDER ===
   function showFolder(node) {
+    releasePDF();
     setCrumbs(node.path);
 
     const ch=sorted(node);
@@ -213,6 +215,7 @@
 
   // === SHOW FILE ===
   function showFile(node) {
+    releasePDF();
     const ext=getExt(node.name), url=`${RAW}/${encP(node.path)}`;
     setCrumbs(node.path);
     if(ext==='pdf') return showPDF(url,node.name);
@@ -222,17 +225,35 @@
   }
 
   function showPDF(url,name) {
-    content.innerHTML=`<div class="pdf-view"><div class="pdf-bar"><span class="pdf-title"></span><div class="pdf-bar-btns"><a class="pdf-btn pdf-open" target="_blank" rel="noopener">Open in new tab</a><a class="pdf-btn pdf-download">Download</a></div></div><iframe class="pdf-frame"></iframe></div>`;
+    const loadId=++pdfLoadId;
+    content.innerHTML=`<div class="pdf-view"><div class="pdf-bar"><span class="pdf-title" aria-live="polite"></span><div class="pdf-bar-btns"><a class="pdf-btn pdf-open" target="_blank" rel="noopener">Open in new tab</a><a class="pdf-btn pdf-download">Download</a></div></div><iframe class="pdf-frame"></iframe></div>`;
     const title=content.querySelector('.pdf-title');
     const open=content.querySelector('.pdf-open');
     const download=content.querySelector('.pdf-download');
     const frame=content.querySelector('.pdf-frame');
-    title.textContent=name;
-    open.href=url;
+    title.textContent=`Loading ${name}...`;
     download.href=url;
     download.download=name;
-    frame.src=url;
     frame.title=name;
+    fetch(url).then(response=>{
+      if(!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.blob();
+    }).then(blob=>{
+      if(loadId!==pdfLoadId) return;
+      pdfObjectUrl=URL.createObjectURL(new Blob([blob],{type:'application/pdf'}));
+      title.textContent=name;
+      open.href=pdfObjectUrl;
+      frame.src=pdfObjectUrl;
+    }).catch(error=>{
+      if(loadId!==pdfLoadId) return;
+      title.textContent=`Preview unavailable: ${error.message}`;
+      open.href=url;
+    });
+  }
+
+  function releasePDF() {
+    pdfLoadId++;
+    if(pdfObjectUrl){URL.revokeObjectURL(pdfObjectUrl);pdfObjectUrl=null;}
   }
 
   function showImage(url,name) {
@@ -264,6 +285,7 @@
   }
 
   function showWelcome() {
+    releasePDF();
     crumbs.innerHTML='';
     if(activeRow){activeRow.classList.remove('active');activeRow=null;}
     content.innerHTML=`<div class="welcome"><h1>Course Repository</h1><p class="sub">Electrical &amp; Electronics Engineering coursework at Özyeğin University. Click a course below or press <kbd class="kbd">Ctrl K</kbd> to search.</p><div class="course-grid" id="courseGrid"></div></div>`;
