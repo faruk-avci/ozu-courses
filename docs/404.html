@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OZU Courses</title>
+</head>
+<body>
+  <script>
+    const base = '/ozu-courses/';
+    const path = location.pathname.startsWith(base)
+      ? location.pathname.slice(base.length).replace(/\/$/, '')
+      : '';
+    if (path) {
+      location.replace(`${base}?route=${encodeURIComponent(decodeURIComponent(path))}${location.hash}`);
+    } else {
+      location.replace(base);
+    }
+  </script>
+</body>
+</html>

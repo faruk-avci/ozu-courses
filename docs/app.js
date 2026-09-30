@@ -1,12 +1,13 @@
 (() => {
   'use strict';
   const O = 'faruk-avci', R = 'ozu-courses', B = 'main';
+  const SITE_BASE = `/${R}/`;
   const API = `https://api.github.com/repos/${O}/${R}/git/trees/${B}?recursive=1`;
   const RAW = `https://raw.githubusercontent.com/${O}/${R}/${B}`;
   const CK = 'ozu_tree_v2', CTL = 10*60*1000;
   const LANGS = { py:'python', cpp:'cpp', c:'c', tex:'latex', ino:'arduino', txt:'plaintext', md:'markdown', asc:'plaintext' };
   const CODE = new Set(Object.keys(LANGS)), IMG = new Set(['png','jpg','jpeg','bmp']);
-  const COURSES = { 'EE-202':'Circuit Theory Lab', 'EE-350':'Analog Electronics', 'EE-493':'Power Electronics', 'PHYS-551':'Computational Physics' };
+  const COURSE_NAMES = { 'EE-202':'Circuit Theory Lab', 'EE-350':'Analog Electronics', 'EE-493':'Power Electronics', 'PHYS-325':'Mathematical Methods for Scientists and Engineers', 'PHYS-551':'Computational Physics' };
 
   // DOM refs
   const $ = id => document.getElementById(id);
@@ -27,7 +28,9 @@
       buildSidebar(tree);
       buildCourseGrid();
 
-      if(location.hash) nav(decodeURIComponent(location.hash.slice(1)));
+      const route = new URLSearchParams(location.search).get('route') || decodeURIComponent(location.pathname.startsWith(SITE_BASE) ? location.pathname.slice(SITE_BASE.length).replace(/\/$/, '') : '');
+      if(route) nav(route, true);
+      else if(location.hash) nav(decodeURIComponent(location.hash.slice(1)), true);
     } catch(e) {
       treeLoad.innerHTML = `<div class="error-msg">Failed: ${e.message} <button class="dl-btn" onclick="location.reload()" style="margin-top:8px">Retry</button></div>`;
     }
@@ -89,14 +92,14 @@
       if(cnt){const s=document.createElement('span');s.className='tr-cnt';s.textContent=cnt;row.appendChild(s);}
       const cul=document.createElement('ul'); cul.className='tc';
       for(const c of sorted(node)) cul.appendChild(mkN(c,depth+1));
-      row.onclick=e=>{e.stopPropagation();ch.classList.toggle('open');cul.classList.toggle('open');showFolder(node);};
+      row.onclick=e=>{e.stopPropagation();ch.classList.toggle('open');cul.classList.toggle('open');nav(node.path);};
       li.appendChild(row); li.appendChild(cul);
     } else {
       const sp=document.createElement('span');sp.className='tr-chev';row.appendChild(sp);
       const ic=document.createElement('span');ic.className='tr-icon';ic.textContent='\u2013';row.appendChild(ic);
       const nm=document.createElement('span');nm.className='tr-name';nm.textContent=node.name;row.appendChild(nm);
       if(ext){const b=document.createElement('span');b.className=`tr-badge ${ext}`;b.textContent=ext;row.appendChild(b);}
-      row.onclick=e=>{e.stopPropagation();setActive(row);openTab(node);closeMobile();};
+      row.onclick=e=>{e.stopPropagation();nav(node.path);closeMobile();};
       li.appendChild(row);
     }
     return li;
@@ -107,11 +110,18 @@
   // === COURSE GRID ===
   function buildCourseGrid() {
     if(!courseGrid||!tree) return;
-    for(const [code,name] of Object.entries(COURSES)) {
-      if(!tree.children[code]) continue;
-      const cnt = countFiles(tree.children[code]);
+    const courses = Object.values(tree.children)
+      .filter(node => node.type === 'tree' && /^[A-Z]+-\d+$/.test(node.name))
+      .sort((a,b) => a.name.localeCompare(b.name));
+    for(const course of courses) {
+      const code = course.name;
+      const name = COURSE_NAMES[code] || code;
+      const cnt = countFiles(course);
       const div=document.createElement('div'); div.className='course-card';
-      div.innerHTML=`<span class="course-code">${code}</span><span class="course-name">${name}</span><span class="course-stat">${cnt} files</span>`;
+      const codeEl=document.createElement('span'); codeEl.className='course-code'; codeEl.textContent=code;
+      const nameEl=document.createElement('span'); nameEl.className='course-name'; nameEl.textContent=name;
+      const statEl=document.createElement('span'); statEl.className='course-stat'; statEl.textContent=`${cnt} files`;
+      div.append(codeEl,nameEl,statEl);
       div.onclick=()=>nav(code);
       courseGrid.appendChild(div);
     }
@@ -138,8 +148,8 @@
     if(idx===-1)return;
     tabs.splice(idx,1);
     if(activeTabId===id){
-      if(tabs.length){activeTabId=tabs[Math.min(idx,tabs.length-1)].id;const t=tabs.find(x=>x.id===activeTabId);showFile(t.node);expandTo(t.node.path);}
-      else{activeTabId=null;showWelcome();}
+      if(tabs.length){activeTabId=tabs[Math.min(idx,tabs.length-1)].id;const t=tabs.find(x=>x.id===activeTabId);nav(t.id,true);}
+      else{activeTabId=null;nav('');}
     }
     renderTabs();
   }
@@ -154,19 +164,26 @@
       const x=document.createElement('button');x.className='tab-close';x.textContent='×';
       x.onclick=e=>{e.stopPropagation();closeTab(t.id);};
       div.appendChild(x);
-      div.onclick=()=>{activeTabId=t.id;renderTabs();showFile(t.node);expandTo(t.node.path);};
+      div.onclick=()=>nav(t.id);
       tabsBar.appendChild(div);
     }
   }
 
   // === NAVIGATE ===
-  function nav(path) {
+  function nav(path, replace=false) {
     if(!tree)return;
+    if(!path){setRoute('',replace);showWelcome();return;}
     const pp=path.split('/'); let cur=tree;
     for(const p of pp){if(cur.children&&cur.children[p])cur=cur.children[p];else return;}
+    setRoute(path,replace);
     expandTo(path);
     if(cur.type==='blob'){const row=sbTree.querySelector(`[data-path="${path}"]`);if(row)setActive(row);openTab(cur);}
     else showFolder(cur);
+  }
+
+  function setRoute(path,replace) {
+    const url=SITE_BASE+encP(path);
+    history[replace?'replaceState':'pushState'](null,'',url);
   }
 
   function expandTo(path) {
@@ -198,8 +215,6 @@
   function showFile(node) {
     const ext=getExt(node.name), url=`${RAW}/${encP(node.path)}`;
     setCrumbs(node.path);
-    location.hash=encodeURIComponent(node.path);
-
     if(ext==='pdf') return showPDF(url,node.name);
     if(IMG.has(ext)) return showImage(url,node.name);
     if(CODE.has(ext)) return showCode(url,node.name,LANGS[ext]);
@@ -256,11 +271,11 @@
     let h=`<span data-p="">~</span>`;
     pp.forEach((p,i)=>{const fp=pp.slice(0,i+1).join('/');h+=`<span class="sep">/</span>`;h+=i===pp.length-1?`<span class="cur">${p}</span>`:`<span data-p="${fp}">${p}</span>`;});
     crumbs.innerHTML=h;
-    crumbs.querySelectorAll('span[data-p]').forEach(s=>s.onclick=()=>{const p=s.dataset.p;if(p==='')showWelcome();else nav(p);});
+    crumbs.querySelectorAll('span[data-p]').forEach(s=>s.onclick=()=>nav(s.dataset.p));
   }
 
   function showWelcome() {
-    crumbs.innerHTML=''; location.hash='';
+    crumbs.innerHTML='';
     if(activeRow){activeRow.classList.remove('active');activeRow=null;}
     content.innerHTML=`<div class="welcome"><h1>Course Repository</h1><p class="sub">Electrical &amp; Electronics Engineering coursework at Özyeğin University. Click a course below or press <kbd class="kbd">Ctrl K</kbd> to search.</p><div class="course-grid" id="courseGrid"></div></div>`;
     buildCourseGrid();
@@ -307,6 +322,10 @@
     lbClose.onclick=closeLB; lightbox.onclick=e=>{if(e.target===lightbox)closeLB();};
     menuBtn.onclick=()=>{sidebar.classList.toggle('open');overlay.classList.toggle('on');};
     overlay.onclick=closeMobile;
+    window.onpopstate=()=>{
+      const path=decodeURIComponent(location.pathname.startsWith(SITE_BASE) ? location.pathname.slice(SITE_BASE.length).replace(/\/$/, '') : '');
+      if(path) nav(path,true); else showWelcome();
+    };
     let ft; filterInput.oninput=()=>{clearTimeout(ft);ft=setTimeout(()=>filterTree(filterInput.value),120);};
     cmdHint.onclick=openCmd;
     cmdOverlay.onclick=e=>{if(e.target===cmdOverlay)closeCmd();};
