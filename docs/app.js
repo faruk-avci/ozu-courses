@@ -222,28 +222,17 @@
   }
 
   function showPDF(url,name) {
-    content.innerHTML=`<div class="pdf-view"><div class="pdf-bar"><span id="pgInfo">Loading...</span><div class="pdf-bar-btns"><button class="pdf-btn" id="pgPrev" disabled>&#8592; Prev</button><button class="pdf-btn" id="pgNext" disabled>Next &#8594;</button><a href="${url}" download="${name}" class="pdf-btn">Download</a></div></div><div class="pdf-canvas" id="pdfC"><div class="loading"><div class="spinner"></div>Loading PDF...</div></div></div>`;
-    if(!window.pdfjsLib){const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';s.onload=()=>{window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';renderPDF(url);};document.head.appendChild(s);}
-    else renderPDF(url);
-  }
-
-  async function renderPDF(url) {
-    const wrap=$('pdfC'),info=$('pgInfo'),pb=$('pgPrev'),nb=$('pgNext');
-    if(!wrap)return;
-    try {
-      const pdf=await window.pdfjsLib.getDocument(url).promise;
-      const tot=pdf.numPages; let pg=1;
-      async function rp(n){
-        const page=await pdf.getPage(n);
-        const w=wrap.clientWidth-32, uv=page.getViewport({scale:1}), sc=Math.min(w/uv.width,2.5), vp=page.getViewport({scale:sc});
-        wrap.innerHTML='';
-        const cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;wrap.appendChild(cv);
-        await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
-        info.textContent=`Page ${n} / ${tot}`; pb.disabled=n<=1; nb.disabled=n>=tot;
-      }
-      pb.onclick=()=>{if(pg>1)rp(--pg);}; nb.onclick=()=>{if(pg<tot)rp(++pg);};
-      await rp(1);
-    }catch(e){wrap.innerHTML=`<div class="error-msg">Failed to load PDF<br><a href="${url}" download class="dl-btn" style="margin-top:8px">Download</a></div>`;}
+    content.innerHTML=`<div class="pdf-view"><div class="pdf-bar"><span class="pdf-title"></span><div class="pdf-bar-btns"><a class="pdf-btn pdf-open" target="_blank" rel="noopener">Open in new tab</a><a class="pdf-btn pdf-download">Download</a></div></div><iframe class="pdf-frame"></iframe></div>`;
+    const title=content.querySelector('.pdf-title');
+    const open=content.querySelector('.pdf-open');
+    const download=content.querySelector('.pdf-download');
+    const frame=content.querySelector('.pdf-frame');
+    title.textContent=name;
+    open.href=url;
+    download.href=url;
+    download.download=name;
+    frame.src=url;
+    frame.title=name;
   }
 
   function showImage(url,name) {
