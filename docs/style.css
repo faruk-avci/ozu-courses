@@ -41,6 +41,8 @@ kbd { font: 12px var(--mono); border: 1px solid var(--ink-3); padding: 0 5px; bo
 .brand-text b { font: 700 21px/1 var(--cond); letter-spacing: .02em; }
 .brand-text .b-ozu { color: var(--ozu-magenta); }
 .brand-text .b-courses { color: var(--ozu-blue); }
+.brand-by { margin-top: 4px; font: 500 12.5px/1.1 var(--cond); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 400px) { .brand-text b { font-size: 19px; } .brand-by { font-size: 11px; letter-spacing: .04em; } }
 .bar-actions { display: flex; align-items: center; gap: 8px; }
 .search-btn {
   display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 10px 0 12px;
